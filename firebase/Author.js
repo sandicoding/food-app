@@ -1,12 +1,10 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const isLoggedIn = () => {
-    return new Promise((resolve, reject) => {
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                localStorage.setItem("user", JSON.stringify(user))
-            } else {
-                resolve(false);
-            }
-        })
-    })
+    const user = AsyncStorage.getItem("user");
+    console.log(user, "user")
+    if (user) {
+        return true;
+    }
+    return false;
 }

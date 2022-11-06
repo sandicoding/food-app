@@ -14,12 +14,22 @@ import { Ionicons } from "@expo/vector-icons";
 import SPACING from "../../config/SPACING";
 import colors from "../../config/Restaurant/colors";
 import DATA from "../../config/Restaurant/DATA";
+import { useSelector } from "react-redux";
 const { width } = Dimensions.get("window");
 
 const ITEM_WIDTH = width / 2 - SPACING * 3;
 
 const HomeScreen = () => {
   const [activeCategory, setActiveCategory] = useState(0);
+
+  const userState = useSelector((state) => state.auth);
+
+  console.log(userState)
+
+  React.useEffect(() => {
+    console.log(userState)
+  }, [userState])
+
   return (
     <SafeAreaView>
       <ScrollView>
