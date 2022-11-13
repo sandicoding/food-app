@@ -4,16 +4,17 @@ import { getFirestore, collection, getDocs, addDoc, doc, setDoc } from 'firebase
 
 
 export const loginService = (email, password, navigation) => {
-    return new Promise((resolve, reject) => {
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                return user
-            })
-            .catch((error) => {
-                reject(error)
-            });
-    })
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            console.log(user, "user")
+            return user
+        })
+        .catch((error) => {
+            console.log(error.code)
+            console.log(error.message)
+            reject(error)
+        });
 }
 
 export const signupService = (fullname, email, password, role, navigation) => {

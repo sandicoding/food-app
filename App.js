@@ -13,26 +13,34 @@ import Loginscreen from "./Screens/auths/Login";
 import SignUpScreen from "./Screens/auths/SignUp";
 import { persistor, store } from "./redux/store";
 import { isLoggedIn } from "./firebase/Author";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Stack = createNativeStackNavigator();
 const App = () => {
   const [isLogged, setIsLogged] = useState(isLoggedIn());
-
   React.useEffect(() => {
-    setIsLogged(isLoggedIn());
+    const getLocalStorageToken = async () => {
+      const token = await AsyncStorage.getItem("token");
+      return setIsLogged(token);
+    }
+    getLocalStorageToken();
   }, [])
 
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <NavigationContainer>
-          {isLogged ? <Stack.Navigator>
-            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
-          </Stack.Navigator> :
+          {isLogged !== null ? (
+            <Stack.Navigator>
+              <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+            </Stack.Navigator>
+          ) : (
             <Stack.Navigator>
               <Stack.Screen name="Login" component={Loginscreen} options={{ headerShown: false }} />
               <Stack.Screen name="Sign Up" component={SignUpScreen} options={{ headerShown: false }} />
-            </Stack.Navigator>}
+            </Stack.Navigator>
+          )
+          }
         </NavigationContainer>
       </PersistGate>
     </Provider>

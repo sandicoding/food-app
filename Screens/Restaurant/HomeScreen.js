@@ -15,20 +15,39 @@ import SPACING from "../../config/SPACING";
 import colors from "../../config/Restaurant/colors";
 import DATA from "../../config/Restaurant/DATA";
 import { useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { isLoggedIn } from "../../firebase/Author";
 const { width } = Dimensions.get("window");
 
 const ITEM_WIDTH = width / 2 - SPACING * 3;
 
-const HomeScreen = () => {
+const HomeScreen = ({ navigation }) => {
   const [activeCategory, setActiveCategory] = useState(0);
+  const [ token , setToken ] = useState(isLoggedIn());
+  const [user, setUser] = useState(null);
 
   const userState = useSelector((state) => state.auth);
-
-  console.log(userState)
+  const { user: currentUser } = userState;
 
   React.useEffect(() => {
-    console.log(userState)
-  }, [userState])
+    const getLocalStorageToken = async () => {
+      const token = await AsyncStorage.getItem("token");
+      return setToken(token);
+    }
+
+    const getLocalStorageUser = async () => {
+      const user = await AsyncStorage.getItem("user");
+      return setUser(JSON.parse(user));
+    }
+    
+    getLocalStorageUser();
+    getLocalStorageToken();
+
+    if(!token){
+      navigation.navigate("Login")
+    }
+
+  }, [userState, token]);
 
   return (
     <SafeAreaView>
@@ -54,7 +73,7 @@ const HomeScreen = () => {
                   color: colors.dark,
                 }}
               >
-                Erikaasav
+                Hello, {currentUser?.fullname}
               </Text>
             </View>
             <View style={{ flexDirection: "row", alignItems: "center" }}>

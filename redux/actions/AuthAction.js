@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { loginService } from "../../services/AuthService";
 import {
     USER_LOGIN_REQUEST,
     USER_LOGIN_SUCCESS,
@@ -8,25 +9,43 @@ import {
     USER_REGISTER_FAIL,
 } from "../constants/AuthConstant";
 
+import {auth, db} from '../../firebase/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { getFirestore, collection, getDocs, addDoc, doc, setDoc, getDoc } from 'firebase/firestore/lite';
+
 export const loginAction = (email, password, navigation) => async (dispatch) => {
     try {
         dispatch({
             type: USER_LOGIN_REQUEST
         })
-        const user = await loginService(email, password, navigation)
 
-        async AsyncStorage.setItem('user', JSON.stringify(user))
+        const user = await signInWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                return user
+            })
+        
+        const getCollectionUser = doc(db, "users", user.uid)
+        const getUser = await getDoc(getCollectionUser)
+        
+        if(getUser.exists()){
+            dispatch({
+                type: USER_LOGIN_SUCCESS,
+                payload: getUser.data()
+            })
 
-        dispatch({
-            type: USER_LOGIN_SUCCESS,
-            payload: user
-        })
+            await AsyncStorage.setItem('token', user.accessToken)
+            await AsyncStorage.setItem("user", JSON.stringify(getUser.data()))
+            await AsyncStorage.setItem("uid", user.uid)
+        }
 
     } catch (error) {
+        console.log(error, "error")
         dispatch({
             type: USER_LOGIN_FAIL,
             payload: error.message
         })
+
     }
 }
 

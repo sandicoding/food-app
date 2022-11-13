@@ -75,8 +75,6 @@ const SignUpScreen = ({ navigation }) => {
         <KeyboardAwareScrollView style={styles.container}>
             <View style={styles.view}>
                 <Text style={{ fontSize: 34, fontWeight: "800", marginBottom: 20 }}>Create Account</Text>
-                <TextBox placeholder="Full Name" label="Full Name" onChangeText={text => handleChange(text, "fullname")} />
-                <TextBox placeholder="Email Address" label="Email" onChangeText={text => handleChange(text, "email")} />
                 <View style={styles.dropdownGender}>
                     <DropDownPicker
                         style={styles.dropdown}
@@ -93,6 +91,8 @@ const SignUpScreen = ({ navigation }) => {
                         zIndexInverse={1000}
                     />
                 </View>
+                <TextBox placeholder={`${roleValue === 'user' ? 'Full Name' : 'Stalls Name'}`} label={`${roleValue === 'user' ? 'Full Name' : 'Stalls Name'}`} onChangeText={text => handleChange(text, "fullname")} />
+                <TextBox placeholder="Email Address" label="Email" onChangeText={text => handleChange(text, "email")} />
                 <TextBox placeholder="Password" label="password" secureTextEntry={true} onChangeText={text => handleChange(text, "pwd")} />
                 <TextBox placeholder="Confirme Password" label="Confirme Password" secureTextEntry={true} onChangeText={text => handleChange(text, "pwd2")} />
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", width: "92%", }}>
