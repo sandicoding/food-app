@@ -17,6 +17,8 @@ import DATA from "../../config/Restaurant/DATA";
 import { useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isLoggedIn } from "../../firebase/Author";
+import { collection, getDocs, query, where } from "firebase/firestore/lite";
+import { db } from "../../firebase/firebase";
 const { width } = Dimensions.get("window");
 
 const ITEM_WIDTH = width / 2 - SPACING * 3;
@@ -25,15 +27,20 @@ const HomeScreen = ({ navigation }) => {
   const [activeCategory, setActiveCategory] = useState(0);
   const [ token , setToken ] = useState(isLoggedIn());
   const [user, setUser] = useState(null);
+  const [foods, setFoods] = useState([]);
 
   const userState = useSelector((state) => state.auth);
   const { user: currentUser } = userState;
 
   React.useEffect(() => {
-    const getLocalStorageToken = async () => {
-      const token = await AsyncStorage.getItem("token");
-      return setToken(token);
+    const getFoods = async () => {
+      const q = query(collection(db, "foods"), where("userId", "==", "83Jtwbmt02O2I9l2mGQCjO3j0VJ3"));
+
+      const querySnapshot = await getDocs(q);
+      setFoods(querySnapshot.docs.map((doc) => doc.data()));
     }
+
+    getFoods();
 
     const getLocalStorageUser = async () => {
       const user = await AsyncStorage.getItem("user");
@@ -41,13 +48,8 @@ const HomeScreen = ({ navigation }) => {
     }
     
     getLocalStorageUser();
-    getLocalStorageToken();
 
-    if(!token){
-      navigation.navigate("Login")
-    }
-
-  }, [userState, token]);
+  }, [userState, token, foods]);
 
   return (
     <SafeAreaView>
@@ -152,10 +154,10 @@ const HomeScreen = ({ navigation }) => {
               marginVertical: SPACING * 2,
             }}
           >
-            {DATA[activeCategory].recipes.map((item) => (
+            {foods.map((item) => (
               <TouchableOpacity
                 style={{ width: ITEM_WIDTH, marginBottom: SPACING * 2 }}
-                key={item.id}
+                key={item?.id}
               >
                 <Image
                   style={{
@@ -163,7 +165,7 @@ const HomeScreen = ({ navigation }) => {
                     height: ITEM_WIDTH + SPACING * 3,
                     borderRadius: SPACING * 2,
                   }}
-                  source={item.image}
+                  source={item?.image}
                 />
                 <Text
                   style={{
@@ -172,7 +174,7 @@ const HomeScreen = ({ navigation }) => {
                     marginTop: SPACING,
                   }}
                 >
-                  {item.name}
+                  {item?.name}
                 </Text>
                 <Text
                   style={{
@@ -181,10 +183,10 @@ const HomeScreen = ({ navigation }) => {
                     marginVertical: SPACING / 2,
                   }}
                 >
-                  Today discount {item.discount}
+                  {item?.description}
                 </Text>
                 <Text style={{ fontSize: SPACING * 2, fontWeight: "700" }}>
-                  $ {item.price}
+                  $ {item?.price}
                 </Text>
               </TouchableOpacity>
             ))}

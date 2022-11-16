@@ -20,17 +20,19 @@ const App = () => {
   const [isLogged, setIsLogged] = useState(isLoggedIn());
   React.useEffect(() => {
     const getLocalStorageToken = async () => {
-      const token = await AsyncStorage.getItem("token");
+      const token = await isLoggedIn()
       return setIsLogged(token);
     }
     getLocalStorageToken();
   }, [])
 
+  console.log("isLogged", isLogged);
+
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <NavigationContainer>
-          {isLogged !== null ? (
+          {isLogged ? (
             <Stack.Navigator>
               <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
             </Stack.Navigator>
