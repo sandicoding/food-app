@@ -14,47 +14,55 @@ import { Ionicons } from "@expo/vector-icons";
 import SPACING from "../../config/SPACING";
 import colors from "../../config/Restaurant/colors";
 import DATA from "../../config/Restaurant/DATA";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isLoggedIn } from "../../firebase/Author";
 import { collection, getDocs, query, where } from "firebase/firestore/lite";
 import { db } from "../../firebase/firebase";
+import { getIdUserAction, getUserAction } from "../../redux/actions/AuthAction";
+import { listFoodAction } from "../../redux/actions/FoodAction";
+import { useFocusEffect } from "@react-navigation/native";
 const { width } = Dimensions.get("window");
 
 const ITEM_WIDTH = width / 2 - SPACING * 3;
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = (props) => {
+
   const [activeCategory, setActiveCategory] = useState(0);
   const [ token , setToken ] = useState(isLoggedIn());
   const [user, setUser] = useState(null);
-  const [foods, setFoods] = useState([]);
+  // const [foods, setFoods] = useState([]);
+  const [uidUser, setUidUser] = useState(null);
+
+  const dispatch = useDispatch();
 
   const userState = useSelector((state) => state.auth);
+  const foodsState = useSelector((state) => state.foods);
+
   const { user: currentUser } = userState;
+  const { foods } = foodsState;
 
-  React.useEffect(() => {
-    const getFoods = async () => {
-      const q = query(collection(db, "foods"), where("userId", "==", "83Jtwbmt02O2I9l2mGQCjO3j0VJ3"));
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(getUserAction());
+      dispatch(getIdUserAction())
+      dispatch(listFoodAction())
+    }, [dispatch])
+  )
 
-      const querySnapshot = await getDocs(q);
-      setFoods(querySnapshot.docs.map((doc) => doc.data()));
-    }
+  const sortFoods = (foods) => {
 
-    getFoods();
+  }
 
-    const getLocalStorageUser = async () => {
-      const user = await AsyncStorage.getItem("user");
-      return setUser(JSON.parse(user));
-    }
-    
-    getLocalStorageUser();
 
-  }, [userState, token, foods]);
+  const halperIdr = (price) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
 
   return (
     <SafeAreaView>
       <ScrollView>
-        <View style={{ padding: SPACING * 2 }}>
+        <View style={{ padding: SPACING * 2, marginTop: SPACING * 2 }}>
           <View
             style={{ flexDirection: "row", justifyContent: "space-between" }}
           >
@@ -82,13 +90,6 @@ const HomeScreen = ({ navigation }) => {
               <TouchableOpacity style={{ marginRight: SPACING }}>
                 <Ionicons
                   name="notifications-outline"
-                  size={SPACING * 3.5}
-                  color={colors.dark}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Ionicons
-                  name="menu"
                   size={SPACING * 3.5}
                   color={colors.dark}
                 />
@@ -121,30 +122,21 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
           <ScrollView horizontal>
-            {DATA.map((category, index) => (
               <TouchableOpacity
                 style={{ marginRight: SPACING * 3 }}
-                key={index}
-                onPress={() => setActiveCategory(index)}
               >
                 <Text
                   style={[
                     {
                       fontSize: SPACING * 1.7,
-                      fontWeight: "600",
-                      color: colors.gray,
-                    },
-                    activeCategory === index && {
-                      color: colors.black,
                       fontWeight: "700",
-                      fontSize: SPACING * 1.8,
-                    },
+                      color: colors.black,
+                    }
                   ]}
                 >
-                  {category.title}
+                  Foods
                 </Text>
               </TouchableOpacity>
-            ))}
           </ScrollView>
           <View
             style={{
@@ -154,8 +146,9 @@ const HomeScreen = ({ navigation }) => {
               marginVertical: SPACING * 2,
             }}
           >
-            {foods.map((item) => (
+            {foods?.map((item) => (
               <TouchableOpacity
+                onPress={() => props.navigation.navigate("Food Detail", { item })}
                 style={{ width: ITEM_WIDTH, marginBottom: SPACING * 2 }}
                 key={item?.id}
               >
@@ -165,7 +158,7 @@ const HomeScreen = ({ navigation }) => {
                     height: ITEM_WIDTH + SPACING * 3,
                     borderRadius: SPACING * 2,
                   }}
-                  source={item?.image}
+                  source={{ uri: item?.image }}
                 />
                 <Text
                   style={{
@@ -186,7 +179,7 @@ const HomeScreen = ({ navigation }) => {
                   {item?.description}
                 </Text>
                 <Text style={{ fontSize: SPACING * 2, fontWeight: "700" }}>
-                  $ {item?.price}
+                  Rp {halperIdr(item?.price)}
                 </Text>
               </TouchableOpacity>
             ))}

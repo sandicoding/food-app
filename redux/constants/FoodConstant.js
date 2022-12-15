@@ -1,0 +1,4 @@
+export const LIST_FOOD_REQUEST = "LIST_FOOD_REQUEST";
+export const LIST_FOOD_SUCCESS = "LIST_FOOD_SUCCESS";
+export const LIST_FOOD_FAIL = "LIST_FOOD_FAIL";
+

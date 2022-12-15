@@ -13,9 +13,28 @@ import React from "react";
 import SPACING from "../../config/SPACING";
 const { height } = Dimensions.get("window");
 import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from '@expo/vector-icons';
 import colors from "../../config/Restaurant/colors";
+import { halperIdr } from "../../helpers";
+import NumericInput from 'react-native-numeric-input'
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, clearCart } from "../../redux/actions/CartAction";
 
-const RecipeDetailScreen = ({ recipe }) => {
+const RecipeDetailScreen = (props) => {
+  const { item } = props.route.params;
+
+  const [qty, setQty] = React.useState(1);
+
+  const dispatch = useDispatch();
+
+  const cartState = useSelector((state) => state.cart);
+  const { cart } = cartState;
+
+  const handleAddToCart = () => {
+    const newCart = { ...item, qty : qty };
+    dispatch(addToCart(newCart));
+  }
+
   return (
     <>
       <ScrollView>
@@ -29,7 +48,7 @@ const RecipeDetailScreen = ({ recipe }) => {
               flexDirection: "row",
               justifyContent: "space-between",
             }}
-            source={recipe.image}
+            source={{ uri: item?.image }}
           >
             <TouchableOpacity
               style={{
@@ -40,6 +59,8 @@ const RecipeDetailScreen = ({ recipe }) => {
                 alignItems: "center",
                 borderRadius: SPACING * 2.5,
               }}
+
+              onPress={() => props.navigation.goBack()}
             >
               <Ionicons
                 name="arrow-back"
@@ -57,7 +78,8 @@ const RecipeDetailScreen = ({ recipe }) => {
                 borderRadius: SPACING * 2.5,
               }}
             >
-              <Ionicons name="share" size={SPACING * 2.5} color={colors.gray} />
+              <AntDesign name="shoppingcart" size={SPACING * 2.5} color={colors.gray} />
+              <View></View>
             </TouchableOpacity>
           </ImageBackground>
           <View
@@ -85,161 +107,13 @@ const RecipeDetailScreen = ({ recipe }) => {
                     fontWeight: "700",
                   }}
                 >
-                  {recipe.name}
-                </Text>
-              </View>
-              <View
-                style={{
-                  padding: SPACING,
-                  paddingHorizontal: SPACING * 3,
-                  backgroundColor: colors.yellow,
-                  flexDirection: "row",
-                  borderRadius: SPACING,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Ionicons
-                  name="star"
-                  color={colors.black}
-                  size={SPACING * 1.7}
-                />
-                <Text
-                  style={{
-                    fontSize: SPACING * 1.6,
-                    fontWeight: "600",
-                    marginLeft: SPACING / 2,
-                    color: colors.black,
-                  }}
-                >
-                  {recipe.rating}
+                  {item?.name}
                 </Text>
               </View>
             </View>
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <View
-                style={{
-                  padding: SPACING,
-                  paddingHorizontal: SPACING * 2,
-                  backgroundColor: colors.light,
-                  flexDirection: "row",
-                  borderRadius: SPACING,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Ionicons
-                  name="time"
-                  color={colors.gray}
-                  size={SPACING * 1.7}
-                />
-                <Text
-                  style={{
-                    fontSize: SPACING * 1.6,
-                    fontWeight: "600",
-                    marginLeft: SPACING / 2,
-                    color: colors.gray,
-                  }}
-                >
-                  {recipe.time}
-                </Text>
-              </View>
-              <View
-                style={{
-                  padding: SPACING,
-                  paddingHorizontal: SPACING * 2,
-                  backgroundColor: colors.light,
-                  flexDirection: "row",
-                  borderRadius: SPACING,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Ionicons
-                  name="bicycle"
-                  color={colors.gray}
-                  size={SPACING * 1.7}
-                />
-                <Text
-                  style={{
-                    fontSize: SPACING * 1.6,
-                    fontWeight: "600",
-                    marginLeft: SPACING / 2,
-                    color: colors.gray,
-                  }}
-                >
-                  {recipe.del_time}
-                </Text>
-              </View>
-              <View
-                style={{
-                  padding: SPACING,
-                  paddingHorizontal: SPACING * 2,
-                  backgroundColor: colors.light,
-                  flexDirection: "row",
-                  borderRadius: SPACING,
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Ionicons
-                  name="restaurant"
-                  color={colors.gray}
-                  size={SPACING * 1.7}
-                />
-                <Text
-                  style={{
-                    fontSize: SPACING * 1.6,
-                    fontWeight: "600",
-                    marginLeft: SPACING / 2,
-                    color: colors.gray,
-                  }}
-                >
-                  {recipe.cooking_time}
-                </Text>
-              </View>
-            </View>
-            <View style={{ marginVertical: SPACING * 3 }}>
-              <Text
-                style={{
-                  fontSize: SPACING * 2,
-                  fontWeight: "700",
-                  color: colors.dark,
-                }}
-              >
-                Ingredients
-              </Text>
-              {recipe.ingredients.map((ingredient) => (
-                <View
-                  style={{
-                    marginVertical: SPACING,
-                    flexDirection: "row",
-                    alignItems: "center",
-                  }}
-                  key={ingredient.id}
-                >
-                  <View
-                    style={{
-                      width: SPACING,
-                      height: SPACING,
-                      backgroundColor: colors.light,
-                      borderRadius: SPACING,
-                    }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: SPACING * 1.7,
-                      fontWeight: "600",
-                      color: colors.gray,
-                      marginLeft: SPACING,
-                    }}
-                  >
-                    {ingredient.title}
-                  </Text>
-                </View>
-              ))}
             </View>
             <Text
               style={{
@@ -256,9 +130,29 @@ const RecipeDetailScreen = ({ recipe }) => {
                 fontSize: SPACING * 1.7,
                 fontWeight: "500",
                 color: colors.gray,
+                marginBottom: SPACING * 4,
               }}
             >
-              {recipe.description}
+              {item.description}
+            </Text>
+            <Text
+              style={{
+                fontSize: SPACING * 2,
+                fontWeight: "700",
+                color: colors.dark,
+                marginBottom: SPACING,
+              }}
+            >
+              Qty
+            </Text>
+            <Text
+              style={{
+                fontSize: SPACING * 1.7,
+                fontWeight: "500",
+                color: colors.gray,
+              }}
+            >
+              <NumericInput value={qty} onChange={value => setQty(value)} />
             </Text>
           </View>
         </View>
@@ -275,6 +169,7 @@ const RecipeDetailScreen = ({ recipe }) => {
               justifyContent: "center",
               borderRadius: SPACING * 2,
             }}
+            onPress={handleAddToCart}
           >
             <Text
               style={{
@@ -283,7 +178,7 @@ const RecipeDetailScreen = ({ recipe }) => {
                 fontWeight: "700",
               }}
             >
-              Choose this for
+              Add to Cart
             </Text>
             <Text
               style={{
@@ -293,7 +188,7 @@ const RecipeDetailScreen = ({ recipe }) => {
                 marginLeft: SPACING / 2,
               }}
             >
-              $ {recipe.price}
+              Rp {halperIdr(item.price)}
             </Text>
           </TouchableOpacity>
         </View>

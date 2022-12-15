@@ -6,6 +6,7 @@ import { auth } from "../../firebase/firebase"
 import { loginService } from '../../services/AuthService'
 import { loginAction } from '../../redux/actions/AuthAction'
 import { useDispatch, useSelector } from 'react-redux'
+import Message from '../../components/Message'
 
 const styles = StyleSheet.create({
     view: {
