@@ -14,6 +14,7 @@ import { isLoggedIn } from "./firebase/Author";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getUserAction, getUserLoggedAction } from "./redux/actions/AuthAction";
 import BottomNavigator from "./Screens/navigation/BottomNavigator";
+import FormCreateFood from "./Screens/Restaurant/FormCreateFood";
 
 const Stack = createNativeStackNavigator();
 const ContainerApp = () => {
@@ -27,6 +28,7 @@ const ContainerApp = () => {
             {isLogged ? (
                 <Stack.Navigator initialRouteName="Home">
                     <Stack.Screen name="Home" component={BottomNavigator} options={{ headerShown: false }} />
+                    <Stack.Screen name="Form Create Food" component={FormCreateFood} options={{ headerShown: false }} />
                     <Stack.Screen name="Food Detail" component={RecipeDetailScreen} options={{ headerShown: false }} />
                 </Stack.Navigator>
             ) : (
