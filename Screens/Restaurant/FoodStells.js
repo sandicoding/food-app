@@ -21,9 +21,6 @@ const FoodStells = (props) => {
                     <TouchableOpacity onPress={() => props.navigation.navigate("Form Create Food") }>
                         <AntDesign name="plus" size={24} color="black" />
                     </TouchableOpacity>
-                    <TouchableOpacity>
-                        <AntDesign name="hearto" size={24} color="black" />
-                    </TouchableOpacity>
                 </View>
             </View>
             <ScrollView horizontal={false} showsHorizontalScrollIndicator={false}>
@@ -61,8 +58,8 @@ const styles = StyleSheet.create({
     },
     header: {
         flexDirection: 'row',
+        alignItems: 'center',
         justifyContent: 'space-between',
-        alignItems: 'center'
     },
     headerRight: {
         flexDirection: 'row',

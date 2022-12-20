@@ -1,5 +1,6 @@
 import React from 'react'
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, Alert } from 'react-native'
+import { MaterialIcons as Icon, AntDesign } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux'
 import { createFoodAction } from '../../redux/actions/FoodAction'
 import { useNavigation } from '@react-navigation/native'
@@ -39,7 +40,27 @@ const FormCreateFood = () => {
         reader.readAsDataURL(file)
     }
 
+    const pickImage = async () => {
+        // No permissions request is necessary for launching the image library
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
 
+        console.log(result);
+
+        if (!result.canceled) {
+            setImage(result.uri);
+        }
+    };
+
+    const deleteImage = () => {
+        setImage(null)
+    }
+
+    console.log(image)
 
     return (
         <KeyboardAwareScrollView>
@@ -78,14 +99,34 @@ const FormCreateFood = () => {
                                 />
                                 {touched.price && <Text style={styles.error}>{errors.price}</Text>}
                             </View>
+                            <View style={styles.ImageContainer}>
+                                {image && (
+                                    <TouchableOpacity onPress={deleteImage}>
+                                        <View style={styles.containerDeleteImage}>
+                                            <AntDesign name="delete" size={24} color="red" />
+                                            <Text style={{ color: 'red' }}>Delete Image</Text>
+                                        </View>
+                                    </TouchableOpacity>
+                                )}
+
+                                {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} />}
+                                {!image && (
+                                <TouchableOpacity onPress={pickImage}>
+                                    <View style={{ width: 200, height: 50, backgroundColor: COLORS.primary, alignItems: "center", justifyContent: "center", borderRadius: SIZES.radius, marginTop: SIZES.padding * 2 }}>
+                                        <Text>Upload Image</Text>
+                                    </View>
+                                </TouchableOpacity>
+                                )}
+                            </View>
                             <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                                 <Text style={styles.buttonText}>Create</Text>
                             </TouchableOpacity>
                         </>
-                    )}
-                </Formik>
-            </View>
-        </KeyboardAwareScrollView>
+                    )
+                    }
+                </Formik >
+            </View >
+        </KeyboardAwareScrollView >
     )
 }
 
@@ -123,6 +164,18 @@ const styles = StyleSheet.create({
         color: COLORS.white,
         ...FONTS.h3,
     },
+    ImageContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: SIZES.padding * 2,
+    },
+    containerDeleteImage: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: SIZES.padding * 2,
+        marginBottom: SIZES.padding * 1,
+    }
 })
 
 export default FormCreateFood

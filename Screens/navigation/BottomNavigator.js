@@ -80,7 +80,7 @@ const BottomNavigator = () => {
           component={FoodStells}
           options={{
             tabBarIcon: ({ color }) => (
-              <Icon name="LocalDining" color={color} size={28} />
+              <Icon name="fastfood" color={color} size={28} />
             ),
           }}
         />
