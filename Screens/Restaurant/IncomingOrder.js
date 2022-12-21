@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { listOrderByStallsIdAction } from '../../redux/actions/OrderAction';
 import { getIdUserAction, getUserAction } from '../../redux/actions/AuthAction';
 import COLORS from '../../consts/colors';
+import { acceptOrderAction, acceptPaymentAction } from '../../redux/actions/AcceptOrderAction';
 
 const IncomingOrder = () => {
 
@@ -28,9 +29,13 @@ const IncomingOrder = () => {
         }, [dispatch])
     )
 
-    const filterOrdersCookingMemo = React.useMemo(() => {
-        return orders?.filter((item) => item?.status === "Cooking");
-    }, [orders])
+    const handleReadyOrder = (item) => {
+        dispatch(acceptOrderAction(item?.id))
+    }
+
+    const handlePaymentOrder = (item) => {
+        dispatch(acceptPaymentAction(item?.id))
+    }
 
     return (
         <View style={styles.container}>
@@ -44,11 +49,13 @@ const IncomingOrder = () => {
                     <Text style={styles.contentHeaderText}>Orders</Text>
                 </View>
                 <View style={styles.contentBody}>
-                    {filterOrdersCookingMemo?.map((item, index) => (
+                    {orders?.map((item, index) => (
                         <View key={index} style={styles.listOrder}>
                             <View style={styles.listOrderHeader}>
                                 <View style={styles.listOrderHeaderLeft}>
                                     <Text style={styles.listOrderHeaderText}>Order ID: {item?.orderID}</Text>
+                                    <Text style={styles.listOrderHeaderStatus}>Status: {item?.status}</Text>
+                                    <Text style={item?.Pay === 'Belum Bayar' ? styles.listOrderHeaderStatusPayment : styles.listOrderHeaderStatusPaymentSuccess }>Payment: {item?.Pay}</Text>
                                 </View>
                                 <View style={styles.listOrderHeaderRight}>
                                     <Text style={styles.listOrderHeaderText}>Total: {halperIdr(item?.total)}</Text>
@@ -65,14 +72,18 @@ const IncomingOrder = () => {
                                     ))}
                                 </View>
                                 <View style={styles.listOrderBodyRight}>
-                                    <TouchableOpacity style={styles.buttonReady}>
-                                        <Text style={styles.buttonReadyText}>Ready</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                        <View style={styles.buttonPay}>
-                                            <Text style={styles.buttonPayText}>Pay</Text>
-                                        </View>
-                                    </TouchableOpacity>
+                                    {item?.status === "Cooking" && (
+                                        <TouchableOpacity style={styles.buttonReady} onPress={() => handleReadyOrder(item)}>
+                                            <Text style={styles.buttonReadyText}>Ready</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                    {item?.Pay === "Belum Bayar" && (
+                                        <TouchableOpacity onPress={() => handlePaymentOrder(item)}>
+                                            <View style={styles.buttonPay} >
+                                                <Text style={styles.buttonPayText}>Pay</Text>
+                                            </View>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                             </View>
                         </View>
@@ -144,7 +155,7 @@ const styles = StyleSheet.create({
     },
     listOrderHeaderLeft: {
         flexDirection: "row",
-        alignItems: "center"
+        flexDirection: "column"
     },
     listOrderHeaderText: {
         fontSize: 16,
@@ -197,6 +208,21 @@ const styles = StyleSheet.create({
         color: COLORS.white,
         fontSize: 16,
         fontWeight: "bold"
+    },
+    listOrderHeaderStatus: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: COLORS.blue
+    },
+    listOrderHeaderStatusPayment: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: COLORS.red
+    },
+    listOrderHeaderStatusPaymentSuccess: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: COLORS.green
     }
 
 })

@@ -8,8 +8,9 @@ import {
 } from '../constants/AcceptOrderConstant';
 import { db } from '../../firebase/firebase';
 import { addDoc, collection, where, query, getDocs, updateDoc, doc } from 'firebase/firestore/lite';
+import { Alert } from 'react-native';
 
-export const acceptOrderAction = (userId, orderId, navigation) => async (dispatch) => {
+export const acceptOrderAction = (orderId) => async (dispatch) => {
     try {
         dispatch({
             type: ACCEPT_ORDER_REQUEST
@@ -24,7 +25,7 @@ export const acceptOrderAction = (userId, orderId, navigation) => async (dispatc
             payload: orderId
         })
 
-        navigation.navigate("Transactions")
+        Alert.alert("Pesanan Selesai", "Pesanan telah selesai")
     } catch (error) {
         dispatch({
             type: ACCEPT_ORDER_FAIL,
@@ -35,7 +36,7 @@ export const acceptOrderAction = (userId, orderId, navigation) => async (dispatc
     }
 }
 
-export const acceptPaymentAction = (userId, orderId, navigation) => async (dispatch) => {
+export const acceptPaymentAction = (orderId) => async (dispatch) => {
     try {
         dispatch({
             type: ACCEPT_PAYMENT_REQUEST
@@ -50,7 +51,7 @@ export const acceptPaymentAction = (userId, orderId, navigation) => async (dispa
             payload: orderId
         })
 
-        navigation.navigate("Transactions")
+        Alert.alert("Pembayaran Selesai", "Pembayaran telah selesai")
     } catch (error) {
         dispatch({
             type: ACCEPT_PAYMENT_FAIL,

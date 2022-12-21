@@ -10,7 +10,10 @@ import {
     UPDATE_FOOD_FAIL,
     DELETE_FOOD_REQUEST,
     DELETE_FOOD_SUCCESS,
-    DELETE_FOOD_FAIL
+    DELETE_FOOD_FAIL,
+    LIST_FOOD_BY_STALLS_ID_REQUEST,
+    LIST_FOOD_BY_STALLS_ID_SUCCESS,
+    LIST_FOOD_BY_STALLS_ID_FAIL
 } from '../constants/FoodConstant'
 
 export const listFoodReducer = (state = { foods: [] }, action) => {
@@ -21,14 +24,20 @@ export const listFoodReducer = (state = { foods: [] }, action) => {
             return { loading: false, foods: action.payload }
         case LIST_FOOD_FAIL:
             return { loading: false, error: action.payload }
+        case LIST_FOOD_BY_STALLS_ID_REQUEST:
+            return { loading: true, foods: [] }
+        case LIST_FOOD_BY_STALLS_ID_SUCCESS:
+            return { loading: false, foods: action.payload }
+        case LIST_FOOD_BY_STALLS_ID_FAIL:
+            return { loading: false, error: action.payload }
         case CREATE_FOOD_REQUEST:
-            return {...state, loading: true }
+            return { ...state, loading: true }
         case CREATE_FOOD_SUCCESS:
             return { loading: false, foods: [...state.foods, action.payload] }
         case CREATE_FOOD_FAIL:
             return { loading: false, error: action.payload }
         case UPDATE_FOOD_REQUEST:
-            return {...state, loading: true }
+            return { ...state, loading: true }
         case UPDATE_FOOD_SUCCESS:
             const newFoodPayload = action.payload;
             const newFoodsState = [...state.foods];
@@ -38,7 +47,7 @@ export const listFoodReducer = (state = { foods: [] }, action) => {
         case UPDATE_FOOD_FAIL:
             return { loading: false, error: action.payload }
         case DELETE_FOOD_REQUEST:
-            return {...state, loading: true }
+            return { ...state, loading: true }
         case DELETE_FOOD_SUCCESS:
             const newFoodsState2 = [...state.foods];
             const index2 = newFoodsState2.findIndex(food => food.id === action.payload);

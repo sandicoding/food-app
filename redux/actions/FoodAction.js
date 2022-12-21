@@ -10,9 +10,12 @@ import {
     UPDATE_FOOD_FAIL,
     DELETE_FOOD_REQUEST,
     DELETE_FOOD_SUCCESS,
-    DELETE_FOOD_FAIL
+    DELETE_FOOD_FAIL,
+    LIST_FOOD_BY_STALLS_ID_REQUEST,
+    LIST_FOOD_BY_STALLS_ID_SUCCESS,
+    LIST_FOOD_BY_STALLS_ID_FAIL
 } from '../constants/FoodConstant'
-import { getFirestore, collection, getDocs, addDoc, doc, setDoc, getDoc, query } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, addDoc, doc, setDoc, getDoc, query, where } from 'firebase/firestore/lite';
 import { Alert } from 'react-native';
 import { db } from '../../firebase/firebase';
 
@@ -37,6 +40,33 @@ export const listFoodAction = () => async (dispatch) => {
     } catch (error) {
         dispatch({
             type: LIST_FOOD_FAIL,
+            payload: error.message
+        })
+    }
+}
+
+export const listFoodByStallsIdAction = (stallsId) => async (dispatch) => {
+    try {
+        dispatch({
+            type: LIST_FOOD_BY_STALLS_ID_REQUEST
+        })
+
+        const q = query(collection(db, "foods"), where("userId", "==", stallsId));
+        const querySnapshot = await getDocs(q);
+
+        const foods = [];
+        querySnapshot.forEach((doc) => {
+            foods.push({ id: doc.id, ...doc.data() })
+        })
+
+        dispatch({
+            type: LIST_FOOD_BY_STALLS_ID_SUCCESS,
+            payload: foods
+        })
+
+    } catch (error) {
+        dispatch({
+            type: LIST_FOOD_BY_STALLS_ID_FAIL,
             payload: error.message
         })
     }

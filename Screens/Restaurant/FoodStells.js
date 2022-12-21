@@ -6,10 +6,30 @@ import { halperIdr } from '../../helpers';
 import SPACING from '../../config/SPACING';
 import colors from '../../config/Restaurant/colors';
 import { useDispatch, useSelector } from 'react-redux';
+import { listFoodByStallsIdAction } from '../../redux/actions/FoodAction';
+import { getIdUserAction, getUserAction } from '../../redux/actions/AuthAction';
+import { useFocusEffect } from "@react-navigation/native";
 
 const { height } = Dimensions.get('window');
 
 const FoodStells = (props) => {
+    const dispatch = useDispatch();
+
+    const userState = useSelector((state) => state.auth);
+    const foodsState = useSelector((state) => state.foods);
+
+    const { user: currentUser } = userState;
+    const { foods } = foodsState;
+
+    useFocusEffect(
+        React.useCallback(() => {
+            dispatch(getUserAction());
+            dispatch(getIdUserAction())
+            dispatch(listFoodByStallsIdAction(currentUser?.uid))
+        }, [dispatch])
+    )
+
+    console.log(foods)
 
     return (
         <View style={styles.container}>
@@ -18,34 +38,26 @@ const FoodStells = (props) => {
                     <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
                 <View style={styles.headerRight}>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("Form Create Food") }>
+                    <TouchableOpacity onPress={() => props.navigation.navigate("Form Create Food")}>
                         <AntDesign name="plus" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
             </View>
             <ScrollView horizontal={false} showsHorizontalScrollIndicator={false}>
                 <View style={styles.listFoods}>
-                    <View style={styles.food}>
-                        <Image source={require('../../assets/meatPizza.png')} style={styles.image} />
-                        <Text style={styles.name}>Food Name</Text>
-                        <Text style={styles.description}>description</Text>
-                        <Text style={styles.price}>Rp. 100.000</Text>
-                    </View>
-                    <View style={styles.food}>
-                        <Image source={require('../../assets/meatPizza.png')} style={styles.image} />
-                        <Text style={styles.name}>Food Name</Text>
-                        <Text style={styles.description}>description</Text>
-                        <Text style={styles.price}>Rp. 100.000</Text>
-                    </View>
-                    <View style={styles.food}>
-                        <Image source={require('../../assets/meatPizza.png')} style={styles.image} />
-                        <Text style={styles.name}>Food Name</Text>
-                        <Text style={styles.description}>description</Text>
-                        <Text style={styles.price}>Rp. 100.000</Text>
-                    </View>
+                    {foods?.map((item, index) => (
+                        <View style={styles.foodContainer} key={index}>
+                            <View style={styles.food}>
+                                <Image source={require('../../assets/meatPizza.png')} style={styles.image} />
+                                <Text style={styles.name}>{item?.name}</Text>
+                                <Text style={styles.description}>{item?.description}</Text>
+                                <Text style={styles.price}>Rp. {halperIdr(item?.price)}</Text>
+                            </View>
+                        </View>
+                    ))}
                 </View>
-            </ScrollView>
-        </View>
+            </ScrollView >
+        </View >
     )
 }
 
