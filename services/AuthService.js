@@ -7,12 +7,9 @@ export const loginService = (email, password, navigation) => {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             const user = userCredential.user;
-            console.log(user, "user")
             return user
         })
         .catch((error) => {
-            console.log(error.code)
-            console.log(error.message)
             reject(error)
         });
 }

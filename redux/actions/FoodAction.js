@@ -17,7 +17,8 @@ import {
 } from '../constants/FoodConstant'
 import { getFirestore, collection, getDocs, addDoc, doc, setDoc, getDoc, query, where } from 'firebase/firestore/lite';
 import { Alert } from 'react-native';
-import { db } from '../../firebase/firebase';
+import { db, getStorage } from '../../firebase/firebase';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 
 export const listFoodAction = () => async (dispatch) => {
     try {
@@ -42,6 +43,8 @@ export const listFoodAction = () => async (dispatch) => {
             type: LIST_FOOD_FAIL,
             payload: error.message
         })
+
+        console.log(error)
     }
 }
 
@@ -72,12 +75,36 @@ export const listFoodByStallsIdAction = (stallsId) => async (dispatch) => {
     }
 }
 
-export const createFoodAction = (food) => async (dispatch) => {
+export const createFoodAction = (food, navigation) => async (dispatch) => {
     try {
         dispatch({
             type: CREATE_FOOD_REQUEST
         })
+
+        // upload image
+        const blob = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.onload = function () {
+                resolve(xhr.response);
+            };
+            xhr.onerror = function (e) {
+                console.log(e);
+                reject(new TypeError("Network request failed"));
+            };
+            xhr.responseType = "blob";
+            xhr.open("GET", food?.image?.uri, true);
+            xhr.send(null);
+        });  
+
+        const storageRef = ref(getStorage(), `foods/${food?.id}`);
+        const snapshot = await uploadBytes(storageRef, blob);
+        const url = await getDownloadURL(snapshot.ref);
+
+        // update key image
+        food["image"] = url;
+
         const docRef = await addDoc(collection(db, "foods"), food);
+
         dispatch({
             type: CREATE_FOOD_SUCCESS,
             payload: { id: docRef.id, ...food }
@@ -89,14 +116,27 @@ export const createFoodAction = (food) => async (dispatch) => {
             type: CREATE_FOOD_FAIL,
             payload: error.message
         })
+
+        console.log(error)
     }
 }
 
-export const updateFoodAction = (foodId, food) => async (dispatch) => {
+export const updateFoodAction = (foodId, food, navigation) => async (dispatch) => {
     try {
         dispatch({
             type: UPDATE_FOOD_REQUEST
         })
+
+        // upload image
+        if (food?.url) {
+            const storageRef = ref(getStorage(), `foods/${food?.id}`);
+            const snapshot = await uploadBytes(storageRef, food.image);
+            const url = await getDownloadURL(snapshot.ref);
+
+            // update key image
+            food["image"] = url;
+        }
+
         await setDoc(doc(db, "foods", foodId), food);
         dispatch({
             type: UPDATE_FOOD_SUCCESS,

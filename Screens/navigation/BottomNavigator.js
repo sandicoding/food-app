@@ -18,8 +18,6 @@ const BottomNavigator = () => {
   const authState = useSelector((state) => state.auth);
   const { user } = authState;
 
-  console.log(user)
-
   return (
     <Tab.Navigator
       screenOptions={{

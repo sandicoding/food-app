@@ -19,8 +19,6 @@ const CartScreen = ({ navigation }) => {
     const userState = useSelector((state) => state.auth);
     const { user } = userState;
 
-    console.log(user)
-
     const cartsState = useSelector((state) => state.cart);
     const { cart } = cartsState;
 

@@ -6,9 +6,10 @@ import { halperIdr } from '../../helpers';
 import SPACING from '../../config/SPACING';
 import colors from '../../config/Restaurant/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { listFoodByStallsIdAction } from '../../redux/actions/FoodAction';
+import { deleteFoodAction, listFoodByStallsIdAction } from '../../redux/actions/FoodAction';
 import { getIdUserAction, getUserAction } from '../../redux/actions/AuthAction';
 import { useFocusEffect } from "@react-navigation/native";
+import Loading from '../../components/Loading';
 
 const { height } = Dimensions.get('window');
 
@@ -19,7 +20,7 @@ const FoodStells = (props) => {
     const foodsState = useSelector((state) => state.foods);
 
     const { user: currentUser } = userState;
-    const { foods } = foodsState;
+    const { foods, loading, error } = foodsState;
 
     useFocusEffect(
         React.useCallback(() => {
@@ -29,7 +30,21 @@ const FoodStells = (props) => {
         }, [dispatch])
     )
 
-    console.log(foods)
+    const handleDelete = (id) => {
+        dispatch(deleteFoodAction(id))
+    }
+
+    if(error) {
+        return (
+            <View style={styles.container}>
+                <Text>No Data</Text>
+            </View>
+        )
+    }
+
+    if(loading) {
+        return <Loading/>
+    }
 
     return (
         <View style={styles.container}>
@@ -38,7 +53,7 @@ const FoodStells = (props) => {
                     <Ionicons name="arrow-back" size={24} color="black" />
                 </TouchableOpacity>
                 <View style={styles.headerRight}>
-                    <TouchableOpacity onPress={() => props.navigation.navigate("Form Create Food")}>
+                    <TouchableOpacity onPress={() => props.navigation.navigate("Form Create Food", { userId: currentUser?.uid, warung: currentUser?.fullname })}>
                         <AntDesign name="plus" size={24} color="black" />
                     </TouchableOpacity>
                 </View>
@@ -47,8 +62,16 @@ const FoodStells = (props) => {
                 <View style={styles.listFoods}>
                     {foods?.map((item, index) => (
                         <View style={styles.foodContainer} key={index}>
+                            <View style={styles.foodAction}>
+                                <TouchableOpacity onPress={() => props.navigation.navigate("Form Create Food", { item  })}>
+                                    <AntDesign name="edit" size={24} color="black" />
+                                </TouchableOpacity>
+                                <TouchableOpacity onPress={() => handleDelete(item?.id)}>
+                                    <AntDesign name="delete" size={24} color="black" />
+                                </TouchableOpacity>
+                            </View>
                             <View style={styles.food}>
-                                <Image source={require('../../assets/meatPizza.png')} style={styles.image} />
+                                <Image source={{ uri: item?.image }} style={styles.image} />
                                 <Text style={styles.name}>{item?.name}</Text>
                                 <Text style={styles.description}>{item?.description}</Text>
                                 <Text style={styles.price}>Rp. {halperIdr(item?.price)}</Text>
@@ -114,7 +137,8 @@ const styles = StyleSheet.create({
     name: {
         fontSize: 16,
         fontWeight: 'bold',
-        marginTop: SPACING * 2
+        marginTop: SPACING * 2,
+        textAlign: 'center'
     },
     description: {
         fontSize: 12,
@@ -125,6 +149,34 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         marginTop: SPACING
+    },
+    foodContainer: {
+        display: 'flex',
+    },
+    foodAction: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: 80,
+        height: 50,
+        backgroundColor: colors.primary,
+        borderTopLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        padding: SPACING,
+        zIndex: 1,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
     }
 })
 

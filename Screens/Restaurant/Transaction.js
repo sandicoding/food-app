@@ -16,13 +16,9 @@ const Transaction = () => {
     const { user } = userState;
     const { transactions } = checkoutState;
 
-    console.log(user, "user");
-    console.log(transactions, "transactions");
-
     useFocusEffect(
         React.useCallback(() => {
             dispatch(getIdUserAction())
-            console.log('load')
             dispatch(checkoutListAction(user?.uid))
         },[dispatch, user?.uid])
     )

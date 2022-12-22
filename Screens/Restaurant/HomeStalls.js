@@ -39,7 +39,6 @@ const HomeStalls = () => {
             total += item?.total;
         })
 
-        console.log(total, "total")
         setIncome(total);
     }
 
@@ -65,9 +64,6 @@ const HomeStalls = () => {
     )
 
     const refreshScroll = () => {}
-
-    console.log(income, "income");
-    console.log(orders, "orders");
 
     return (
         <SafeAreaView>
