@@ -7,6 +7,7 @@ import { loginService } from '../../services/AuthService'
 import { loginAction } from '../../redux/actions/AuthAction'
 import { useDispatch, useSelector } from 'react-redux'
 import Message from '../../components/Message'
+import Loading from '../../components/Loading'
 
 const styles = StyleSheet.create({
     view: {
@@ -43,6 +44,10 @@ export default function Loginscreen({ navigation }) {
         const { email, pwd } = values
 
         dispatch(loginAction(email, pwd, navigation))
+    }
+
+    if(loading) {
+        return <Loading/>
     }
 
     return (

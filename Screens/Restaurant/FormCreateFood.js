@@ -91,6 +91,7 @@ const FormCreateFood = (props) => {
 
     const deleteImage = () => {
         setFileUpload(null)
+        setImage(null)
     }
 
     return (

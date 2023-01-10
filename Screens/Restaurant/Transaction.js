@@ -23,12 +23,12 @@ const Transaction = () => {
         },[dispatch, user?.uid])
     )
 
+    const nanosecondsToTime = (nanoseconds) => {
+        
+        const date = new Date(nanoseconds*1000);
 
-    const getFullHour = (nanoseconds, seconds) => {
-        const date = new Date(nanoseconds * 1000 + seconds * 1000);
-        const hours = date.getHours();
-        const minutes = date.getMinutes();
-        const secondsTime = date.getSeconds();
+        const hours = date?.getHours();
+        const minutes = date?.getMinutes();
         return `${hours}:${minutes}`;
     }
 
@@ -45,7 +45,19 @@ const Transaction = () => {
                         <View style={styles.itemContainer}>
                             <View style={styles.itemHeader}>
                                 <Text style={styles.itemName}>Order ID: {item?.orderID}</Text>
-                                <Text style={styles.itemTime}>{getFullHour(item?.date?.nanoseconds, item?.date?.seconds)}</Text>
+                                <Text style={styles.itemTime}>{nanosecondsToTime(item?.date?.seconds)}</Text>
+                            </View>
+                            <View style={styles.itemBodyFood}>
+                                <FlatList
+                                    data={item?.name}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item }) => (
+                                        <View style={styles.itemBodyFood}>
+                                            <Text style={styles.itemTitle}>{item?.name}</Text>
+                                            <Text style={styles.itemStatus}>x{item?.qty}</Text>
+                                        </View>
+                                    )}
+                                />
                             </View>
                             <View style={styles.itemBody}>
                                 <Text style={styles.itemTitle}>total: </Text>
@@ -133,8 +145,12 @@ const styles = StyleSheet.create({
     itemStatusProccessAlreadyPaid: {
         fontSize: 16,
         color: '#4CAF50',
+    },
+    itemBodyFood : {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 10,
     }
-
 })
 
 export default Transaction

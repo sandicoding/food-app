@@ -68,6 +68,8 @@ export const loginAction = (email, password, navigation) => async (dispatch) => 
             await AsyncStorage.setItem("user", JSON.stringify(getUser.data()))
             await AsyncStorage.setItem("uid", user.uid)
 
+            Alert.alert("Login berhasil.")
+
         }
         
     } catch (error) {

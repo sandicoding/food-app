@@ -15,7 +15,7 @@ import {
     LIST_FOOD_BY_STALLS_ID_SUCCESS,
     LIST_FOOD_BY_STALLS_ID_FAIL
 } from '../constants/FoodConstant'
-import { getFirestore, collection, getDocs, addDoc, doc, setDoc, getDoc, query, where } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, addDoc, doc, setDoc, getDoc, query, where, deleteDoc } from 'firebase/firestore/lite';
 import { Alert } from 'react-native';
 import { db, getStorage } from '../../firebase/firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
@@ -30,7 +30,7 @@ export const listFoodAction = () => async (dispatch) => {
 
         const foods = [];
         querySnapshot.forEach((doc) => {
-            foods.push({ id: doc.id, ...doc.data() })
+                foods.push({ id: doc.id, ...doc.data() })
         })
 
         dispatch({
@@ -127,14 +127,38 @@ export const updateFoodAction = (foodId, food, navigation) => async (dispatch) =
             type: UPDATE_FOOD_REQUEST
         })
 
-        // upload image
-        if (food?.url) {
+        if(food.image.uri) {
+            // upload image
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                    resolve(xhr.response);
+                };
+                xhr.onerror = function (e) {
+                    console.log(e);
+                    reject(new TypeError("Network request failed"));
+                };
+                xhr.responseType = "blob";
+                xhr.open("GET", food?.image?.uri, true);
+                xhr.send(null);
+            });
+
             const storageRef = ref(getStorage(), `foods/${food?.id}`);
-            const snapshot = await uploadBytes(storageRef, food.image);
+            const snapshot = await uploadBytes(storageRef, blob);
             const url = await getDownloadURL(snapshot.ref);
 
             // update key image
             food["image"] = url;
+        }else {
+            // upload image
+            if (food?.url) {
+                const storageRef = ref(getStorage(), `foods/${food?.id}`);
+                const snapshot = await uploadBytes(storageRef, food.image);
+                const url = await getDownloadURL(snapshot.ref);
+    
+                // update key image
+                food["image"] = url;
+            }
         }
 
         await setDoc(doc(db, "foods", foodId), food);
@@ -157,7 +181,8 @@ export const deleteFoodAction = (foodId) => async (dispatch) => {
         dispatch({
             type: DELETE_FOOD_REQUEST
         })
-        await setDoc(doc(db, "foods", foodId), { isDeleted: true });
+        
+        await deleteDoc(doc(db, "foods", foodId));
         dispatch({
             type: DELETE_FOOD_SUCCESS,
             payload: foodId

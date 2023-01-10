@@ -31,8 +31,9 @@ const HomeScreen = (props) => {
   const [activeCategory, setActiveCategory] = useState(0);
   const [ token , setToken ] = useState(isLoggedIn());
   const [user, setUser] = useState(null);
-  // const [foods, setFoods] = useState([]);
+  const [foodData, setFoodData] = useState([]);
   const [uidUser, setUidUser] = useState(null);
+  const [search, setSearch] = useState('');
 
   const dispatch = useDispatch();
 
@@ -40,7 +41,7 @@ const HomeScreen = (props) => {
   const foodsState = useSelector((state) => state.foods);
 
   const { user: currentUser } = userState;
-  const { foods } = foodsState;
+  const { foods, loading } = foodsState;
 
   useFocusEffect(
     React.useCallback(() => {
@@ -50,14 +51,21 @@ const HomeScreen = (props) => {
     }, [dispatch])
   )
 
-  const sortFoods = (foods) => {
-
-  }
-
-
   const halperIdr = (price) => {
-    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
+
+const handleSearch = (text) => {S
+    const query = text.toLowerCase();
+    const filtered = foods.filter((food) => {
+      return food.name.toLowerCase().includes(query);
+    });
+    setFoodData(filtered);
+};
+
+  React.useEffect(() => {
+    handleSearch(search)
+  }, [search])
 
   return (
     <SafeAreaView>
@@ -114,6 +122,7 @@ const HomeScreen = (props) => {
             <TextInput
               placeholder="Want to .."
               placeholderTextColor={colors.gray}
+              onChangeText={(text) => setSearch(text)}
               style={{
                 color: colors.gray,
                 fontSize: SPACING * 2,
@@ -146,7 +155,7 @@ const HomeScreen = (props) => {
               marginVertical: SPACING * 2,
             }}
           >
-            {foods?.map((item) => (
+            {foodData?.map((item) => (
               <TouchableOpacity
                 onPress={() => props.navigation.navigate("Food Detail", { item })}
                 style={{ width: ITEM_WIDTH, marginBottom: SPACING * 2 }}

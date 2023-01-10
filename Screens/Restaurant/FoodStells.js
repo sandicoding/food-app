@@ -71,7 +71,7 @@ const FoodStells = (props) => {
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.food}>
-                                <Image source={{ uri: item?.image }} style={styles.image} />
+                                <Image source={{ uri: item?.image  }} style={styles.image} />
                                 <Text style={styles.name}>{item?.name}</Text>
                                 <Text style={styles.description}>{item?.description}</Text>
                                 <Text style={styles.price}>Rp. {halperIdr(item?.price)}</Text>

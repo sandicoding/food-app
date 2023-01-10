@@ -35,6 +35,10 @@ const RecipeDetailScreen = (props) => {
     dispatch(addToCart(newCart));
   }
 
+  const navigateToCart = () => {
+    props.navigation.navigate("Cart");
+  }
+
   return (
     <>
       <ScrollView>
@@ -77,6 +81,7 @@ const RecipeDetailScreen = (props) => {
                 alignItems: "center",
                 borderRadius: SPACING * 2.5,
               }}
+              onPress={navigateToCart}
             >
               <AntDesign name="shoppingcart" size={SPACING * 2.5} color={colors.gray} />
               <View></View>

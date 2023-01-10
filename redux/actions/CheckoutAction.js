@@ -8,6 +8,7 @@ import {
 } from '../constants/CheckoutConstant';
 import { db } from '../../firebase/firebase';
 import { addDoc, collection, where, query, getDocs } from 'firebase/firestore/lite';
+import { clearCart } from './CartAction';
 
 export const checkoutAction = (order, navigation) => async (dispatch) => {
     try {
@@ -21,6 +22,8 @@ export const checkoutAction = (order, navigation) => async (dispatch) => {
             type: CHECKOUT_SUCCESS,
             payload: order
         })
+
+        dispatch(clearCart())
 
         navigation.navigate("Transactions")
     } catch (error) {

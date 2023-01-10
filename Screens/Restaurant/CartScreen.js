@@ -27,7 +27,7 @@ const CartScreen = ({ navigation }) => {
     useFocusEffect(
         React.useCallback(() => {
             dispatch(getIdUserAction())
-            dispatch(clearCart())
+            // dispatch(clearCart())
         }, [dispatch])
     )
 

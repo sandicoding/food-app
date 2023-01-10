@@ -15,8 +15,6 @@ const Profile = ({ navigation }) => {
         dispatch(getUserAction());
     }, [dispatch])
 
-    console.log(user)
-
     const handleLogout = () => {
         dispatch(logoutAction(navigation))
     }
