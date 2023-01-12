@@ -55,7 +55,7 @@ const HomeScreen = (props) => {
     return price?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
   }
 
-const handleSearch = (text) => {S
+const handleSearch = (text) => {
     const query = text.toLowerCase();
     const filtered = foods.filter((food) => {
       return food.name.toLowerCase().includes(query);

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
 import { halperIdr } from '../../helpers';
@@ -38,59 +38,61 @@ const IncomingOrder = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                    <Text style={styles.headerText}>List Orders</Text>
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                        <Text style={styles.headerText}>List Orders</Text>
+                    </View>
                 </View>
-            </View>
-            <View style={styles.content}>
-                <View style={styles.contentHeader}>
-                    <Text style={styles.contentHeaderText}>Orders</Text>
-                </View>
-                <View style={styles.contentBody}>
-                    {orders?.map((item, index) => (
-                        <View key={index} style={styles.listOrder}>
-                            <View style={styles.listOrderHeader}>
-                                <View style={styles.listOrderHeaderLeft}>
-                                    <Text style={styles.listOrderHeaderText}>Order ID: {item?.orderID}</Text>
-                                    <Text style={styles.listOrderHeaderStatus}>Status: {item?.status}</Text>
-                                    <Text style={item?.Pay === 'Belum Bayar' ? styles.listOrderHeaderStatusPayment : styles.listOrderHeaderStatusPaymentSuccess }>Payment: {item?.Pay}</Text>
+                <View style={styles.content}>
+                    <View style={styles.contentHeader}>
+                        <Text style={styles.contentHeaderText}>Orders</Text>
+                    </View>
+                    <View style={styles.contentBody}>
+                        {orders?.map((item, index) => (
+                            <View key={index} style={styles.listOrder}>
+                                <View style={styles.listOrderHeader}>
+                                    <View style={styles.listOrderHeaderLeft}>
+                                        <Text style={styles.listOrderHeaderText}>Order ID: {item?.orderID}</Text>
+                                        <Text style={styles.listOrderHeaderStatus}>Status: {item?.status}</Text>
+                                        <Text style={item?.Pay === 'Belum Bayar' ? styles.listOrderHeaderStatusPayment : styles.listOrderHeaderStatusPaymentSuccess}>Payment: {item?.Pay}</Text>
+                                    </View>
+                                    <View style={styles.listOrderHeaderRight}>
+                                        <Text style={styles.listOrderHeaderText}>Total: {halperIdr(item?.total)}</Text>
+                                    </View>
                                 </View>
-                                <View style={styles.listOrderHeaderRight}>
-                                    <Text style={styles.listOrderHeaderText}>Total: {halperIdr(item?.total)}</Text>
+                                <View style={styles.listOrderBody}>
+                                    <View style={styles.listOrderBodyLeft}>
+                                        {item?.name?.map((item, index) => (
+                                            <View key={index}>
+                                                <View key={index} style={styles.listOrderBodyItem}>
+                                                    <Text style={styles.listOrderBodyText}>{item?.name} x {item?.qty}</Text>
+                                                </View>
+                                            </View>
+                                        ))}
+                                    </View>
+                                    <View style={styles.listOrderBodyRight}>
+                                        {item?.status === "Cooking" && (
+                                            <TouchableOpacity style={styles.buttonReady} onPress={() => handleReadyOrder(item)}>
+                                                <Text style={styles.buttonReadyText}>Ready</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        {item?.Pay === "Belum Bayar" && (
+                                            <TouchableOpacity onPress={() => handlePaymentOrder(item)}>
+                                                <View style={styles.buttonPay} >
+                                                    <Text style={styles.buttonPayText}>Pay</Text>
+                                                </View>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
                                 </View>
                             </View>
-                            <View style={styles.listOrderBody}>
-                                <View style={styles.listOrderBodyLeft}>
-                                    {item?.name?.map((item, index) => (
-                                        <View key={index}>
-                                            <View key={index} style={styles.listOrderBodyItem}>
-                                                <Text style={styles.listOrderBodyText}>{item?.name} x {item?.qty}</Text>
-                                            </View>
-                                        </View>
-                                    ))}
-                                </View>
-                                <View style={styles.listOrderBodyRight}>
-                                    {item?.status === "Cooking" && (
-                                        <TouchableOpacity style={styles.buttonReady} onPress={() => handleReadyOrder(item)}>
-                                            <Text style={styles.buttonReadyText}>Ready</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                    {item?.Pay === "Belum Bayar" && (
-                                        <TouchableOpacity onPress={() => handlePaymentOrder(item)}>
-                                            <View style={styles.buttonPay} >
-                                                <Text style={styles.buttonPayText}>Pay</Text>
-                                            </View>
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-                            </View>
-                        </View>
-                    ))}
+                        ))}
+                    </View>
                 </View>
             </View>
-        </View>
+        </ScrollView>
     )
 }
 
